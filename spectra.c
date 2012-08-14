@@ -10,6 +10,62 @@
 #include <string.h>
 #include <math.h>
 
+// calculates the Modified Bessel function at nth order of the 1st kind
+float modified_bessel (int n){
+  if (n == 0){
+    int k;
+    int N = 100; //supposed to be infinite! for sure do further calculations of error
+    //TODO
+  }
+  else {
+    exit (EXIT_FAILURE);
+  }
+}
+
+// calculates and affects window function on a restricted part of the signal
+void apply_window_function (float window[], int samp_window_length, int window_type){
+  switch (window_type){
+  case 0: // rectangular function
+    return;
+    break;
+
+  case 1: // triangular function, Barlett
+    int t;
+    for (t = 0 ; t < samp_window_length ; t++)
+      if ((t >= 0) && (t < (samp_window_length / 2)))
+	window[t] = window[t] * ((2.0 * t) / samp_window_length);
+      else
+	window[t] = window[t] * ((2.0 * (samp_window_length - t)) / samp_window_length);
+    break;
+
+  case 2: // Hann window
+    int t;
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (0.5 - 0.5 * (cos (2.0 * 3.14 * (((float) t) / ((float) (samp_window_length - 1))))));
+    break;
+	
+  case 3: // Hamming window
+    int t;
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (0.54 - 0.46 * (cos ((2 * 3.14 * t) / (samp_window_length - 1))));
+    break;
+
+  case 4: // Kaiser window
+    float i0   = modified_bessel (0);
+    float M = ((float) samp_window_length) - 1.0;
+    float beta = 1; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
+    int t;
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (i0 * (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
+    break;
+    
+  default:
+    exit(EXIT_FAILURE);
+    break;
+  }
+}
+
+// prints on stdout an array t as a set of float
 void print_float_array (int length, float t[]){
   if (length < 7){
     int i;
@@ -24,6 +80,7 @@ void print_float_array (int length, float t[]){
   }
 }
 
+// initialize an array of frequencies wrt central frequency, span and bandwidth resolution
 void frequency_components_array_init (float central_frequency, float span, float bandwidth_res, float frequency_components[]){
   int number_frequency_components = (int) (span / bandwidth_res);
   int i;
@@ -32,6 +89,7 @@ void frequency_components_array_init (float central_frequency, float span, float
   }
 }
 
+// replace a substring by another
 char* replace(char *st, char *orig, char *repl) {
   static char buffer[4096];
   char *ch;
@@ -48,6 +106,7 @@ char* string2float(char* buf){
   return replace(buf,",",".");
 }
 
+// in discrete Fourier transform, returns the first sum
 // recursive function needs a number of access to stack equals to number of samples to sum
 float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
   if (n == (samp_number - 1)){
@@ -58,6 +117,7 @@ float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp,
   }
 }
 
+// in discrete Fourier transform, returns the second sum
 float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
   if (n == (samp_number - 1)){
     return samples[samp_number - 1] * cos ((2 * freq_comp * 3.14 * n) / samp_freq);
@@ -67,7 +127,7 @@ float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp,
   }
 }
 
-
+// main function 
 int main (int argc, char **argv){
   int j;
   int success = 0;
@@ -143,7 +203,11 @@ int main (int argc, char **argv){
     success = sscanf(string2float(buf), "\t%f", &temp1);
     if (success > 0){
       if (i == (samp_window_length - 1)){
-	i = 0;
+	i = 0; // put index to 0 to get a new computation window afterwards
+	
+	//apply a window function
+	apply_window_function (window, samp_window_length, "rectangular");
+
 	//processing FT
 	for (j = 0 ; j < number_frequency_components ; j++){
 	  time = k * window_length;
