@@ -143,7 +143,7 @@ int main (int argc, char **argv){
   float window_length = 1.0 / bit_rate;                  // (s)
   int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
-  // manual choice for FT
+  // manual choice for FT calc
   /*
     int number_frequency_components = 4;
     float frequency_components[] = { 20.0 , 21.0 , 22.0, 23.0 };
@@ -206,7 +206,7 @@ int main (int argc, char **argv){
 	i = 0; // put index to 0 to get a new computation window afterwards
 	
 	//apply a window function
-	apply_window_function (window, samp_window_length, "rectangular");
+	apply_window_function (window, samp_window_length, 1); // window function calculation
 
 	//processing FT
 	for (j = 0 ; j < number_frequency_components ; j++){

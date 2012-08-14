@@ -21,7 +21,38 @@ You can execute the program with the following arguments:
 
 You can also draw a 3D plot with [R](http://www.r-project.org/):
 
-	make graph
+	make graph SPECTRUM=[SPRECTRUM FILE PREVIOUSLY PRODUCED]
+
+
+Usage
+=============
+
+This unstable version not (yet) user-friendly. Parameters for FT computings need to be changed in `spectra.c` file:
+
+	// BEGIN physics
+        int n_samples = 0;                                     // (unit)
+        int samp_freq = 10000;                                 // (Hz)
+        int bit_rate  = 2;                                     // (Hz = bps)
+        float window_length = 1.0 / bit_rate;                  // (s)
+        int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
+        
+        // manual choice for FT calc
+        /*
+          int number_frequency_components = 4;
+          float frequency_components[] = { 20.0 , 21.0 , 22.0, 23.0 };
+        */
+      
+        // pseudo continuous FT calc
+        float central_frequency = 200000;                               // (Hz)
+        float span = 300000;                                            // (Hz)
+        float bandwidth_res = 5000;                                     // (Hz)
+        int number_frequency_components = (int) (span / bandwidth_res); // (unit)
+        float frequency_components[number_frequency_components];        // (set of Hz)
+        // END physics
+
+The window function must be specified at the line:
+
+        apply_window_function (window, samp_window_length, 1); // window function calculation
 
 Troubleshooting 
 ---------------
