@@ -29,7 +29,7 @@ Usage
 
 This unstable version not (yet) user-friendly. Parameters for FT computings need to be changed in `spectra.c` file:
 
-	// BEGIN physics
+        // BEGIN physics
         int n_samples = 0;                                     // (unit)
         int samp_freq = 10000;                                 // (Hz)
         int bit_rate  = 2;                                     // (Hz = bps)

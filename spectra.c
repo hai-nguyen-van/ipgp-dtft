@@ -10,27 +10,36 @@
 #include <string.h>
 #include <math.h>
 
+// factorial function
+// be careful of recursive calls !
+int factorial (int n){
+  if (n == 0)
+    return 1;
+  else
+    return n * factorial (n - 1);
+}
+
 // calculates the Modified Bessel function at nth order of the 1st kind
-float modified_bessel (int n){
-  if (n == 0){
-    int k;
-    int N = 100; //supposed to be infinite! for sure do further calculations of error
-    //TODO
+float modified_bessel_0 (float x){
+  int k;
+  int N = 12; //supposed to be infinite! for sure do further calculations of error to get good value with respect to precision : too high number causes division by 0
+  float res = 0;
+  for (k = 0 ; k < N ; k++){
+    res = res + (pow ((0.25 * pow (x, 2.0)), ((float) k))) / pow (((float) (factorial (k))), 2.0);
   }
-  else {
-    exit (EXIT_FAILURE);
-  }
+  return res;
 }
 
 // calculates and affects window function on a restricted part of the signal
 void apply_window_function (float window[], int samp_window_length, int window_type){
+  int t;
+  float M;
   switch (window_type){
   case 0: // rectangular function
     return;
     break;
 
   case 1: // triangular function, Barlett
-    int t;
     for (t = 0 ; t < samp_window_length ; t++)
       if ((t >= 0) && (t < (samp_window_length / 2)))
 	window[t] = window[t] * ((2.0 * t) / samp_window_length);
@@ -39,24 +48,20 @@ void apply_window_function (float window[], int samp_window_length, int window_t
     break;
 
   case 2: // Hann window
-    int t;
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (0.5 - 0.5 * (cos (2.0 * 3.14 * (((float) t) / ((float) (samp_window_length - 1))))));
     break;
 	
   case 3: // Hamming window
-    int t;
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (0.54 - 0.46 * (cos ((2 * 3.14 * t) / (samp_window_length - 1))));
     break;
 
-  case 4: // Kaiser window
-    float i0   = modified_bessel (0);
-    float M = ((float) samp_window_length) - 1.0;
+  case 4: // Kaiser-Bessel window
+    M = ((float) samp_window_length) - 1.0;
     float beta = 1; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
-    int t;
     for (t = 0 ; t < samp_window_length ; t++)
-      window[t] = window[t] * (i0 * (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
+      window[t] = window[t] * (modified_bessel_0 (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
     break;
     
   default:
@@ -152,7 +157,7 @@ int main (int argc, char **argv){
   // pseudo continuous FT calc
   float central_frequency = 200000;                               // (Hz)
   float span = 300000;                                            // (Hz)
-  float bandwidth_res = 5000;                                     // (Hz)
+  float bandwidth_res = 1000;                                     // (Hz)
   int number_frequency_components = (int) (span / bandwidth_res); // (unit)
   float frequency_components[number_frequency_components];        // (set of Hz)
   // END physics
@@ -206,7 +211,7 @@ int main (int argc, char **argv){
 	i = 0; // put index to 0 to get a new computation window afterwards
 	
 	//apply a window function
-	apply_window_function (window, samp_window_length, 1); // window function calculation
+	apply_window_function (window, samp_window_length, 4); // last number is window type, see upon for further functions
 
 	//processing FT
 	for (j = 0 ; j < number_frequency_components ; j++){
