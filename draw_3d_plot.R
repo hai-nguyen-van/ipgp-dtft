@@ -8,8 +8,10 @@ for (i in length(args) : 1){
 }
 
 library (scatterplot3d)
-spectres <- read.csv (fichier, header=TRUE)
-pdf (fichier)
-scatterplot3d (spectres, col.grid="grey", main="Signal spectrum with respect to time", grid=TRUE, angle=25, pch=46, type="p")
+spectres <- read.csv (input, header=TRUE)
+# function pdf() or png() ?
+png (output)
+# pch=46 to have points instead of bullets
+scatterplot3d (spectres, col.grid="grey", main="Signal spectrum with respect to time", grid=TRUE, angle=25, type="p")
 dev.off()
 # readline ("Press <Enter> to quit")
