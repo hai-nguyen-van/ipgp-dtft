@@ -2,8 +2,8 @@ all: spectra.c
 	gcc -Wall spectra.c -o spectra -lm
 
 plot:
-	R CMD BATCH --no-save --no-restore '--args fichier="${SPECTRUM}"' draw_3d_plot.R 
-	evince Rplots.pdf
+	R CMD BATCH --no-save --no-restore '--args input="${SPECTRUM}" output="${SPECTRUM}.pdf"' draw_3d_plot.R 
+	evince ${SPECTRUM}.pdf
 
 clean: 
 	rm -f *~
