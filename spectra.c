@@ -2,7 +2,7 @@
  * Spectrum analyzing with Fourier transform
  * Hai Nguyen Van <nguyenva@informatique.univ-paris-diderot.fr>
  * Institut de Physique du Globe de Paris, Université Paris Diderot
- * Licensed under CeCILL Free Software License Agreement
+ * The copyright to this code is held by Institut de Physique du Globe de Paris. All rights reserved. This file is distributed under the license CeCILL Free Software License Agreement.
  */
 
 #include <stdlib.h>
@@ -59,7 +59,7 @@ void apply_window_function (float window[], int samp_window_length, int window_t
 
   case 4: // Kaiser-Bessel window
     M = ((float) samp_window_length) - 1.0;
-    float beta = 1; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
+    float beta = 3 * 3.14; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (modified_bessel_0 (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
     break;
