@@ -34,8 +34,10 @@ float modified_bessel_0 (float x){
 void apply_window_function (float window[], int samp_window_length, int window_type){
   int t;
   float M;
+  float tau;
+  float D;
   switch (window_type){
-  case 0: // rectangular function
+  case 0: // rectangular function (uniform)
     return;
     break;
 
@@ -63,7 +65,23 @@ void apply_window_function (float window[], int samp_window_length, int window_t
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (modified_bessel_0 (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
     break;
-    
+
+  case 5: // flat top window
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (1.0
+			       - 1.93  * cos ((2 * 3.14 * t) / (samp_window_length - 1))
+			       + 1.29  * cos ((4 * 3.14 * t) / (samp_window_length - 1))
+			       - 0.388 * cos ((6 * 3.14 * t) / (samp_window_length - 1))
+			       + 0.032 * cos ((8 * 3.14 * t) / (samp_window_length - 1)));
+    break;
+
+  case 6: // Poisson window (exponential)
+    D = 60; // warning:parameter D is the targeted decay
+    tau = (8.69 * samp_window_length) / (2.0 * D)
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * exp (((-1.0) * abs (t - ((samp_window_length - 1) / 2.0))) / tau);
+    break;
+
   default:
     exit(EXIT_FAILURE);
     break;
@@ -132,6 +150,18 @@ float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp,
   }
 }
 
+char *window_name_of_window_id (int window_id){
+  switch (window_id){
+  case 0:  return "rectangular function"; break;
+  case 1:  return "triangular function"; break;
+  case 2:  return "Hann function"; break;
+  case 3:  return "Hamming function"; break;
+  case 4:  return "Kaiser-Bessel window"; break;
+  case 5:  return "flat top window"; break;
+  default: exit (EXIT_FAILURE); break;
+  }
+}
+
 // main function 
 int main (int argc, char **argv){
   int j;
@@ -143,7 +173,7 @@ int main (int argc, char **argv){
 
   // BEGIN physics
   int n_samples = 0;                                     // (unit)
-  int samp_freq = 10000;                                 // (Hz)
+  float samp_freq = 10000;                               // (Hz)
   int bit_rate  = 2;                                     // (Hz = bps)
   float window_length = 1.0 / bit_rate;                  // (s)
   int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
@@ -160,15 +190,15 @@ int main (int argc, char **argv){
   float bandwidth_res = 1000;                                     // (Hz)
   int number_frequency_components = (int) (span / bandwidth_res); // (unit)
   float frequency_components[number_frequency_components];        // (set of Hz)
+  int window_function_id = 0;                                     // see upon for associated id window function
   // END physics
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components);
 
   printf("Starting spectrum analyzing of recorded signal...\n\n");
   printf("Preliminary hypothesis : \n");
-  printf("Fs (sampling frequency : Hz) = %d\n", samp_freq);
-  printf("T (window length : s) = %f\n", window_length);
-
+  printf("Fs (sampling frequency) = %f Hz\n", samp_freq);
+  printf("T (window length) = %f s\n", window_length);
   float window[samp_window_length];
 
   while(fgets(buf, 100, input_file) != NULL){
@@ -179,9 +209,11 @@ int main (int argc, char **argv){
       n_samples++;
     }
   }
-  printf("\rN (number of samples : unit) = %d\n\n", n_samples);
+  printf("\rN (number of samples) = %d unit\n", n_samples);
+  printf("Dt (signal length) = %f s = %f min\n\n", samp_freq * n_samples, (samp_freq * n_samples) / 60);
+
   printf("Fourier transform computings on :\n");
-  printf("Window function = rectangular window\n"); //a moduler
+  printf("Window function = %s\n", window_name_of_window_id (window_function_id)); //a moduler
   printf("Samples for one window = %f\n", (samp_freq * window_length));
   printf("Number of windows to be computed on recorded signal (bits) = %f\n", (n_samples / (samp_freq * window_length)));
 
@@ -211,7 +243,7 @@ int main (int argc, char **argv){
 	i = 0; // put index to 0 to get a new computation window afterwards
 	
 	//apply a window function
-	apply_window_function (window, samp_window_length, 4); // last number is window type, see upon for further functions
+	apply_window_function (window, samp_window_length, window_function_id);
 
 	//processing FT
 	for (j = 0 ; j < number_frequency_components ; j++){
