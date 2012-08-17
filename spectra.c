@@ -10,6 +10,8 @@
 #include <string.h>
 #include <math.h>
 
+#define PI 3.14159265359
+
 // factorial function
 // be careful of recursive calls !
 int factorial (int n){
@@ -51,17 +53,17 @@ void apply_window_function (float window[], int samp_window_length, int window_t
 
   case 2: // Hann window
     for (t = 0 ; t < samp_window_length ; t++)
-      window[t] = window[t] * (0.5 - 0.5 * (cos (2.0 * 3.14 * (((float) t) / ((float) (samp_window_length - 1))))));
+      window[t] = window[t] * (0.5 - 0.5 * (cos (2.0 * PI * (((float) t) / ((float) (samp_window_length - 1))))));
     break;
 	
   case 3: // Hamming window
     for (t = 0 ; t < samp_window_length ; t++)
-      window[t] = window[t] * (0.54 - 0.46 * (cos ((2 * 3.14 * t) / (samp_window_length - 1))));
+      window[t] = window[t] * (0.54 - 0.46 * (cos ((2 * PI * t) / (samp_window_length - 1))));
     break;
 
   case 4: // Kaiser-Bessel window
     M = ((float) samp_window_length) - 1.0;
-    float beta = 3 * 3.14; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
+    float beta = 3 * PI; // warning:has to be changed with respect to parameter alpha : 'b = 'a * PI
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (modified_bessel_0 (beta * sqrt (1 - pow ((((2 * ((float) t)) / M) - 1), 2))));
     break;
@@ -69,15 +71,15 @@ void apply_window_function (float window[], int samp_window_length, int window_t
   case 5: // flat top window
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * (1.0
-			       - 1.93  * cos ((2 * 3.14 * t) / (samp_window_length - 1))
-			       + 1.29  * cos ((4 * 3.14 * t) / (samp_window_length - 1))
-			       - 0.388 * cos ((6 * 3.14 * t) / (samp_window_length - 1))
-			       + 0.032 * cos ((8 * 3.14 * t) / (samp_window_length - 1)));
+			       - 1.93  * cos ((2 * PI * t) / (samp_window_length - 1))
+			       + 1.29  * cos ((4 * PI * t) / (samp_window_length - 1))
+			       - 0.388 * cos ((6 * PI * t) / (samp_window_length - 1))
+			       + 0.032 * cos ((8 * PI * t) / (samp_window_length - 1)));
     break;
 
   case 6: // Poisson window (exponential)
     D = 60; // warning:parameter D is the targeted decay
-    tau = (8.69 * samp_window_length) / (2.0 * D)
+    tau = (8.69 * samp_window_length) / (2.0 * D);
     for (t = 0 ; t < samp_window_length ; t++)
       window[t] = window[t] * exp (((-1.0) * abs (t - ((samp_window_length - 1) / 2.0))) / tau);
     break;
@@ -133,20 +135,20 @@ char* string2float(char* buf){
 // recursive function needs a number of access to stack equals to number of samples to sum
 float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
   if (n == (samp_number - 1)){
-    return (samples[samp_number - 1] * cos ((2 * freq_comp * 3.14 * n) / samp_freq));
+    return (samples[samp_number - 1] * cos ((2 * freq_comp * PI * n) / samp_freq));
   }
   else{
-    return (samples[n] * cos ((2 * freq_comp * 3.14 * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
+    return (samples[n] * cos ((2 * freq_comp * PI * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
   }
 }
 
 // in discrete Fourier transform, returns the second sum
 float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
   if (n == (samp_number - 1)){
-    return samples[samp_number - 1] * cos ((2 * freq_comp * 3.14 * n) / samp_freq);
+    return samples[samp_number - 1] * cos ((2 * freq_comp * PI * n) / samp_freq);
   }
   else{
-    return (samples[n] * sin ((2 * freq_comp * 3.14 * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
+    return (samples[n] * sin ((2 * freq_comp * PI * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
   }
 }
 
@@ -202,9 +204,10 @@ int main (int argc, char **argv){
   float window[samp_window_length];
 
   while(fgets(buf, 100, input_file) != NULL){
-    success = sscanf(string2float(buf), "\t%f", &temp1);
+    success = sscanf(buf, "\t%f", &temp1); // use string2float() function for comma float numbers
     if (success > 0){
       success = 0;
+      //      printf ("%f\n", temp1);
       //      printf("\r%d", n_samples); // comment for better performance
       n_samples++;
     }
@@ -237,7 +240,7 @@ int main (int argc, char **argv){
 
   fprintf (output_file, "Frequency,Time,Amplitude\n");
   while(fgets(buf, 100, input_file) != NULL){
-    success = sscanf(string2float(buf), "\t%f", &temp1);
+    success = sscanf(buf, "\t%f", &temp1);
     if (success > 0){
       if (i == (samp_window_length - 1)){
 	i = 0; // put index to 0 to get a new computation window afterwards
