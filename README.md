@@ -1,7 +1,7 @@
 SPECTRA - Spectral analysis with Fourier transform
 ==============
 
-Spectra is a window-optimized spectrum analyzer with discrete Fourier transform.
+Spectra is a window-optimized spectrum analyzer with discrete Fourier transform. For more information on strategies for choosing windows, you may refer to [The Fundamentals of FFT-Based Signal Analysis and Measurement, Cerna-Harvey (National Instruments, Application Note 041)](ftp://ftp.ni.com/pub/devzone/pdf/tut_4278.pdf).
 
 Downloading and building
 =============
