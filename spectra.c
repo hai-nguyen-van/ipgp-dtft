@@ -53,6 +53,7 @@ void apply_window_function (float window[], int samp_window_length, int window_t
   float M;
   float tau;
   float D;
+  float alpha;
   switch (window_type){
   case 0: // rectangular function (uniform)
     return;
@@ -99,6 +100,29 @@ void apply_window_function (float window[], int samp_window_length, int window_t
       window[t] = window[t] * exp (((-1.0) * abs (t - ((samp_window_length - 1) / 2.0))) / tau);
     break;
 
+  case 7: // Blackman window
+    alpha = 0.16; //warning: parameter 'a 
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (((1.0 - alpha) / 2.0)
+			       - 0.5          * cos ((2 * PI * t) / (samp_window_length - 1))
+			       + (alpha / 2)  * cos ((4 * PI * t) / (samp_window_length - 1)));
+    break;
+
+  case 8: // Exact Blackman window
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * ((7938.0 / 18608.0)
+			       - (9240.0 / 18608.0) * cos ((2 * PI * t) / (samp_window_length - 1))
+			       + (1430.0 / 18608.0) * cos ((4 * PI * t) / (samp_window_length - 1)));
+    break;
+
+  case 9: // Blackman-Harris window
+    for (t = 0 ; t < samp_window_length ; t++)
+      window[t] = window[t] * (0.35875
+			       - 0.48829 * cos ((2 * PI * t) / (samp_window_length - 1))
+			       + 0.14128 * cos ((4 * PI * t) / (samp_window_length - 1))
+			       - 0.01168 * cos ((6 * PI * t) / (samp_window_length - 1)));
+    break;
+    
   default:
     exit(EXIT_FAILURE);
     break;
@@ -169,13 +193,16 @@ float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp,
 
 char *window_name_of_window_id (int window_id){
   switch (window_id){
-  case 0:  return "rectangular function (uniform)"; break;
-  case 1:  return "triangular function (Barlett)"; break;
-  case 2:  return "Hann function"; break;
-  case 3:  return "Hamming function"; break;
+  case 0:  return "rectangular window (uniform)"; break;
+  case 1:  return "triangular window (Barlett)"; break;
+  case 2:  return "Hann window"; break;
+  case 3:  return "Hamming window"; break;
   case 4:  return "Kaiser-Bessel window"; break;
   case 5:  return "flat top window"; break;
   case 6:  return "Poisson window (exponential)"; break;
+  case 7:  return "Blackman window"; break;
+  case 8:  return "Exact Blackman window"; break;
+  case 9:  return "Blackman-Harris window"; break;
   default: exit (EXIT_FAILURE); break;
   }
 }
@@ -209,7 +236,7 @@ int main (int argc, char **argv){
   float frequency_components[number_frequency_components];        // (set of Hz)
   int window_function_id = 0;                                     // see upon for associated id window function
 
-  int field = 9;                                                  // select field in file seperated by delimiter
+  int field = 0;                                                  // select field in file seperated by delimiter
   // END physics
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
@@ -228,13 +255,13 @@ int main (int argc, char **argv){
     if (is_number (buffer[0])){
       // sscanf (buffer, format_as_lvm, temp);
       // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
-      printf("\r%d", n_samples); // comment for better performance
+      //   printf("\r%d", n_samples); // comment for better performance
       n_samples ++;
     }
   }
 
   printf("\rN (number of samples) = %d unit\n", n_samples);
-  printf("Dt (signal length) = %f s = %f min\n\n", samp_freq * n_samples, (samp_freq * n_samples) / 60);
+  printf("Dt (signal length) = %f s = %f min\n\n", n_samples / samp_freq, (n_samples / samp_freq) / 60);
 
   printf("Fourier transform computings on :\n");
   printf("Window function = %s\n", window_name_of_window_id (window_function_id)); //a moduler
