@@ -1,5 +1,5 @@
 /*
- * Spectrum analyzing with Fourier transform
+ * SPECTRA - a window-optimized spectrum analyzer with Fourier transform
  * Hai Nguyen Van <nguyenva@informatique.univ-paris-diderot.fr>
  * Institut de Physique du Globe de Paris, Université Paris Diderot
  * The copyright to this code is held by Institut de Physique du Globe de Paris. All rights reserved. This file is distributed under the license CeCILL Free Software License Agreement.
@@ -10,7 +10,22 @@
 #include <string.h>
 #include <math.h>
 
+#define MAX_FILE_LINE_LENGTH 500
 #define PI 3.14159265359
+
+// returns if c is a beginning of a number
+int is_number (char c){
+  return ((c == '-') || (c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5') || (c == '6') || (c == '7') || (c == '8') || (c == '9'));
+}
+
+// makes a format string that matches number values in a LabVIEW Measurement file
+void format_string_field_selection_as_lvm (char *s, int n){
+  int i;
+  strcpy (s, "");
+  for (i = 0 ; i < n ; i++)
+    strcat (s, "%*f\t");
+  strcat (s, "%f");
+}
 
 // factorial function
 // be careful of recursive calls !
@@ -154,22 +169,22 @@ float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp,
 
 char *window_name_of_window_id (int window_id){
   switch (window_id){
-  case 0:  return "rectangular function"; break;
-  case 1:  return "triangular function"; break;
+  case 0:  return "rectangular function (uniform)"; break;
+  case 1:  return "triangular function (Barlett)"; break;
   case 2:  return "Hann function"; break;
   case 3:  return "Hamming function"; break;
   case 4:  return "Kaiser-Bessel window"; break;
   case 5:  return "flat top window"; break;
+  case 6:  return "Poisson window (exponential)"; break;
   default: exit (EXIT_FAILURE); break;
   }
 }
 
 // main function 
 int main (int argc, char **argv){
-  int j;
-  int success = 0;
-  char buf[256];
-  float temp1;
+  int j; // iterator
+  char buffer[MAX_FILE_LINE_LENGTH];
+  float temp [1];
   FILE *input_file = fopen(argv[1], "r");
   FILE *output_file = fopen(argv[2], "w");
 
@@ -193,9 +208,11 @@ int main (int argc, char **argv){
   int number_frequency_components = (int) (span / bandwidth_res); // (unit)
   float frequency_components[number_frequency_components];        // (set of Hz)
   int window_function_id = 0;                                     // see upon for associated id window function
+
+  int field = 9;                                                  // select field in file seperated by delimiter
   // END physics
 
-  frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components);
+  frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
 
   printf("Starting spectrum analyzing of recorded signal...\n\n");
   printf("Preliminary hypothesis : \n");
@@ -203,15 +220,19 @@ int main (int argc, char **argv){
   printf("T (window length) = %f s\n", window_length);
   float window[samp_window_length];
 
-  while(fgets(buf, 100, input_file) != NULL){
-    success = sscanf(buf, "\t%f", &temp1); // use string2float() function for comma float numbers
-    if (success > 0){
-      success = 0;
-      //      printf ("%f\n", temp1);
-      //      printf("\r%d", n_samples); // comment for better performance
-      n_samples++;
+  char format_as_lvm [field * 5 + 3];
+  format_string_field_selection_as_lvm (format_as_lvm, field);
+
+  while (!feof (input_file)){
+    fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
+    if (is_number (buffer[0])){
+      // sscanf (buffer, format_as_lvm, temp);
+      // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
+      printf("\r%d", n_samples); // comment for better performance
+      n_samples ++;
     }
   }
+
   printf("\rN (number of samples) = %d unit\n", n_samples);
   printf("Dt (signal length) = %f s = %f min\n\n", samp_freq * n_samples, (samp_freq * n_samples) / 60);
 
@@ -230,7 +251,6 @@ int main (int argc, char **argv){
 
   // file processing
   input_file = fopen(argv[1], "r");
-  success = 0;
   int i = 0;
   int k = 0;
 
@@ -239,16 +259,20 @@ int main (int argc, char **argv){
   float amplitude;
 
   fprintf (output_file, "Frequency,Time,Amplitude\n");
-  while(fgets(buf, 100, input_file) != NULL){
-    success = sscanf(buf, "\t%f", &temp1);
-    if (success > 0){
+
+  while (!feof (input_file)){
+    fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
+    if (is_number (buffer[0])){
+      sscanf (buffer, format_as_lvm, temp);
+      // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
+
       if (i == (samp_window_length - 1)){
 	i = 0; // put index to 0 to get a new computation window afterwards
 	
 	//apply a window function
 	apply_window_function (window, samp_window_length, window_function_id);
 
-	//processing FT
+	//processing Fourier transform
 	for (j = 0 ; j < number_frequency_components ; j++){
 	  time = k * window_length;
 	  frequency = frequency_components[j];
@@ -262,18 +286,17 @@ int main (int argc, char **argv){
 	printf ("\r[%d] Calculating at %dth window...\t", ((int) (((k * 100) / number_windows_in_signal))), k); // comment for better performance
       }
       else{
-	// fill the computation window 
-	window[i] = temp1;
+	// fill the computation window until window gets full for FT computation
+	window[i] = temp[0];
 	i++;
       }
     }
   }
 
-
   // ending process
   printf("\nSpectrum analysis has ended.\n");
   fclose(input_file);
   fclose(output_file);
-  return 0;
-  
+
+  return EXIT_SUCCESS;
 }
