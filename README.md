@@ -41,7 +41,9 @@ This unstable version not (yet) user-friendly. Parameters for FT computings need
 Specifications for input and output files
 ---------------------------
 
-The input file is a sequence of decimal numbers in ASCII characters seperated by spaces. The output file is a [comma-seperated values (CSV)](http://supercsv.sourceforge.net/csvSpecification.html) file.
+The input file is a sequence of lines consisting of ASCII decimal numbers seperated by tab spaces `\t`. A line stands for an acquisition at a time t and yet several fields in a line represents the different indexed channels of the ADC. This specification is compatible with comma-delimited [LabVIEW Measurement filetype](http://www.ni.com/white-paper/4139/en). Pratham filetype specifications will soon get available in the next versions.
+
+The output file is a [comma-seperated values (CSV)](http://supercsv.sourceforge.net/csvSpecification.html) file.
 
 
 Troubleshooting 
