@@ -13,9 +13,34 @@
 #define MAX_FILE_LINE_LENGTH 500
 #define PI 3.14159265359
 
+// need to be checked!
+int int_of_string (char *s){
+  int n[1];
+  sscanf (s, "%d", n);
+  return n[0];
+}
+
 // returns if c is a beginning of a number
 int is_number (char c){
   return ((c == '-') || (c == '0') || (c == '1') || (c == '2') || (c == '3') || (c == '4') || (c == '5') || (c == '6') || (c == '7') || (c == '8') || (c == '9'));
+}
+
+// counts the number of samples of a channel in a file
+int number_of_samples_of_file (char *file_name){
+  FILE *input_file = fopen(file_name, "r");
+  char buffer[MAX_FILE_LINE_LENGTH];
+  int n = 0;
+  while (!feof (input_file)){
+    fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
+    if (is_number (buffer[0])){
+      // sscanf (buffer, format_as_lvm, temp);
+      // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
+      // printf("\r%d", n); // comment for better performance
+      n++;
+    }
+  }
+  fclose(input_file);
+  return n;
 }
 
 // makes a format string that matches number values in a LabVIEW Measurement file
@@ -209,16 +234,11 @@ char *window_name_of_window_id (int window_id){
 
 // main function 
 int main (int argc, char **argv){
-  int j; // iterator
-  char buffer[MAX_FILE_LINE_LENGTH];
-  float temp [1];
-  FILE *input_file = fopen(argv[1], "r");
-  FILE *output_file = fopen(argv[2], "w");
 
-  // BEGIN physics
-  int n_samples = 0;                                     // (unit)
-  float samp_freq = 10000;                               // (Hz)
-  int bit_rate  = 2;                                     // (Hz = bps)
+  // BEGIN physics -------------------------------------------------------------------------------
+  int n_samples;       // DO NOT FILL HERE!              // (unit)
+  float samp_freq = 10000;                              // (Hz)
+  int bit_rate = 1;                                      // (Hz = bps)
   float window_length = 1.0 / bit_rate;                  // (s)
   int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
@@ -229,15 +249,15 @@ int main (int argc, char **argv){
   */
 
   // pseudo continuous FT calc
-  float central_frequency = 200000;                               // (Hz)
-  float span = 300000;                                            // (Hz)
-  float bandwidth_res = 1000;                                     // (Hz)
+  float central_frequency = 100000;                               // (Hz)
+  float span = 200000;                                            // (Hz)
+  float bandwidth_res = 100;                                       // (Hz)
   int number_frequency_components = (int) (span / bandwidth_res); // (unit)
   float frequency_components[number_frequency_components];        // (set of Hz)
   int window_function_id = 0;                                     // see upon for associated id window function
 
   int field = 0;                                                  // select field in file seperated by delimiter
-  // END physics
+  // END physics --------------------------------------------------------------------------------
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
 
@@ -250,15 +270,7 @@ int main (int argc, char **argv){
   char format_as_lvm [field * 5 + 3];
   format_string_field_selection_as_lvm (format_as_lvm, field);
 
-  while (!feof (input_file)){
-    fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
-    if (is_number (buffer[0])){
-      // sscanf (buffer, format_as_lvm, temp);
-      // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
-      //   printf("\r%d", n_samples); // comment for better performance
-      n_samples ++;
-    }
-  }
+  n_samples = number_of_samples_of_file (argv[1]);
 
   printf("\rN (number of samples) = %d unit\n", n_samples);
   printf("Dt (signal length) = %f s = %f min\n\n", n_samples / samp_freq, (n_samples / samp_freq) / 60);
@@ -276,8 +288,13 @@ int main (int argc, char **argv){
 
   printf("Computing... \n");
 
+  int j; // iterator
+  char buffer[MAX_FILE_LINE_LENGTH];
+  float temp [1];
+  
   // file processing
-  input_file = fopen(argv[1], "r");
+  FILE *input_file = fopen(argv[1], "r");
+  FILE *output_file = fopen(argv[2], "w");
   int i = 0;
   int k = 0;
 
@@ -290,9 +307,9 @@ int main (int argc, char **argv){
   while (!feof (input_file)){
     fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
     if (is_number (buffer[0])){
-      sscanf (buffer, format_as_lvm, temp);
-      // printf ("counted value : %f\n", temp[0]); // uncomment for bug solving
-
+      sscanf  (buffer, format_as_lvm, temp);
+      // printf("counted value : %f\n", temp[0]); // uncomment for bug solving
+      
       if (i == (samp_window_length - 1)){
 	i = 0; // put index to 0 to get a new computation window afterwards
 	
@@ -307,6 +324,7 @@ int main (int argc, char **argv){
 		     pow ((somme_fourier_1 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
 		     + pow ((somme_fourier_2 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
 		     );
+	  //	  printf ("%f,%f,%f\n", frequency, time, amplitude);
 	  fprintf (output_file, "%f,%f,%f\n", frequency, time, amplitude);
 	}
 	k++;
@@ -319,6 +337,8 @@ int main (int argc, char **argv){
       }
     }
   }
+  fclose(input_file);
+
 
   // ending process
   printf("\nSpectrum analysis has ended.\n");
