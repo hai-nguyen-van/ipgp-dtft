@@ -17,10 +17,10 @@ int main (int argc, char **argv){
 
   // BEGIN physics -------------------------------------------------------------------------------
   int n_samples;       // DO NOT FILL HERE!              // (unit)
-  float samp_freq = 10000;                              // (Hz)
-  int bit_rate = 1;                                      // (Hz = bps)
-  float window_length = 1.0 / bit_rate;                  // (s)
-  int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
+  const float samp_freq = 10000;                              // (Hz)
+  const int bit_rate = 1;                                      // (Hz = bps)
+  const float window_length = 1.0 / bit_rate;                  // (s)
+  const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
   // manual choice for FT calc
   /*
@@ -29,12 +29,12 @@ int main (int argc, char **argv){
   */
 
   // pseudo continuous FT calc
-  float central_frequency = 100000;                               // (Hz)
-  float span = 200000;                                            // (Hz)
-  float bandwidth_res = 100;                                       // (Hz)
-  int number_frequency_components = (int) (span / bandwidth_res); // (unit)
+  const float central_frequency = 100000;                               // (Hz)
+  const float span = 200000;                                            // (Hz)
+  const float bandwidth_res = 100;                                       // (Hz)
+  const int number_frequency_components = (int) (span / bandwidth_res); // (unit)
   float frequency_components[number_frequency_components];        // (set of Hz)
-  int window_function_id = 0;                                     // see upon for associated id window function
+  const int window_function_id = 0;                                     // see upon for associated id window function
 
   int field = 0;                                                  // select field in file seperated by delimiter
   // END physics --------------------------------------------------------------------------------
@@ -117,8 +117,6 @@ int main (int argc, char **argv){
       }
     }
   }
-  fclose(input_file);
-
 
   // ending process
   printf("\nSpectrum analysis has ended.\n");
