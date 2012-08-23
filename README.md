@@ -29,19 +29,23 @@ Usage
 
 This unstable version not (yet) user-friendly. Parameters for FT computings need to be changed in `spectra.c` file at the following lines:
 
-        // BEGIN physics
-        int n_samples = 0;                                              // (unit)
+        // BEGIN physics -------------------------------------------------------------------------------
+        unsigned int n_samples = 0;    // DO NOT FILL HERE!                                    // (unit)
 
         ...
-
-        float frequency_components[number_frequency_components];        // (set of Hz)
-        // END physics
+        
+        int field = 0;
+        // END physics ---------------------------------------------------------------------------------
 
 
 Specifications for input and output files
 ---------------------------
 
-The input file is a sequence of lines consisting of ASCII decimal numbers seperated by tab spaces `\t`. A line stands for an acquisition at a time t and yet several fields in a line represents the different indexed channels of the ADC. This specification is compatible with comma-delimited [LabVIEW Measurement filetype](http://www.ni.com/white-paper/4139/en). Pratham filetype specifications will soon get available in the next versions.
+The input file is a sequence of lines consisting of ASCII decimal numbers seperated by tab spaces `\t`. A line stands for an acquisition at a time _t_ and yet several fields in a line represents the different indexed channels of the ADC. This specification is compatible with comma-delimited [LabVIEW Measurement filetype](http://www.ni.com/white-paper/4139/en). Pratham filetype specifications will soon get available in the next versions.
+
+Those who have commma-delimiter files are invited to convert their files with dot-delimiter for floating points number representation with:
+
+        sed -i 's/,/./g' [FILE(S)]
 
 The output file is a [comma-seperated values (CSV)](http://supercsv.sourceforge.net/csvSpecification.html) file.
 
