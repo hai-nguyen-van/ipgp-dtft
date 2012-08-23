@@ -10,14 +10,15 @@
 #include <string.h>
 #include <math.h>
 
-#include "function.h"
+#include "init_functions.h"
+#include "math_functions.h"
 
 // main function 
 int main (int argc, char **argv){
 
   // BEGIN physics -------------------------------------------------------------------------------
-  int n_samples;       // DO NOT FILL HERE!              // (unit)
-  const float samp_freq = 10000;                              // (Hz)
+  unsigned int n_samples;           // DO NOT FILL HERE!       // (unit)
+  const float samp_freq = 10000;                               // (Hz)
   const int bit_rate = 1;                                      // (Hz = bps)
   const float window_length = 1.0 / bit_rate;                  // (s)
   const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
@@ -29,14 +30,14 @@ int main (int argc, char **argv){
   */
 
   // pseudo continuous FT calc
-  const float central_frequency = 100000;                               // (Hz)
-  const float span = 200000;                                            // (Hz)
+  const float central_frequency = 100000;                                // (Hz)
+  const float span = 200000;                                             // (Hz)
   const float bandwidth_res = 100;                                       // (Hz)
-  const int number_frequency_components = (int) (span / bandwidth_res); // (unit)
-  float frequency_components[number_frequency_components];        // (set of Hz)
-  const int window_function_id = 0;                                     // see upon for associated id window function
+  const int number_frequency_components = (int) (span / bandwidth_res);  // (unit)
+  float frequency_components[number_frequency_components];               // (set of Hz)
+  const int window_function_id = 0;                                      // see upon for associated id window function
 
-  int field = 0;                                                  // select field in file seperated by delimiter
+  int field = 0;                                                         // select field in file seperated by delimiter
   // END physics --------------------------------------------------------------------------------
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
@@ -65,6 +66,13 @@ int main (int argc, char **argv){
   printf("Searching frequency components = ");
   print_float_array (number_frequency_components, frequency_components);
   printf("\n\n");
+  printf("n_samples: %d\n",n_samples);
+  float *signal;
+  signal = malloc(sizeof(float)*n_samples);
+  printf("testest\n");
+  init_array_signal (signal, n_samples, format_as_lvm, argv[1]);
+  printf("glop2\n");
+  return 0;
 
   printf("Computing... \n");
 
