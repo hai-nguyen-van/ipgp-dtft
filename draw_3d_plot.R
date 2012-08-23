@@ -1,5 +1,11 @@
 # Requires the scatterplot3d library
-# > install.packages ("scatterplot3d")
+
+# declares function to check if a package exists in installed packages set
+is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1])
+
+# if package is not installed yet, fetches package files and install them
+if (! (is.installed ("scatterplot3d")))
+   install.packages ("scatterplot3d")
 
 # Arguments specified in commandArgs()
 args <- (commandArgs(TRUE))
