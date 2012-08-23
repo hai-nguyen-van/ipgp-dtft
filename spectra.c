@@ -1,8 +1,10 @@
-/*
+/**
  * SPECTRA - a window-optimized spectrum analyzer with Fourier transform
  * Hai Nguyen Van <nguyenva@informatique.univ-paris-diderot.fr>
  * Institut de Physique du Globe de Paris, Université Paris Diderot
  * The copyright to this code is held by Institut de Physique du Globe de Paris. All rights reserved. This file is distributed under the license CeCILL Free Software License Agreement.
+ 
+ * Main file
  */
 
 #include <stdlib.h>
@@ -40,95 +42,78 @@ int main (int argc, char **argv){
   int field = 0;                                                         // select field in file seperated by delimiter
   // END physics --------------------------------------------------------------------------------
 
-  frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
-
-  printf("Starting spectrum analyzing of recorded signal...\n\n");
-  printf("Preliminary hypothesis : \n");
-  printf("Fs (sampling frequency) = %f Hz\n", samp_freq);
-  printf("T (window length) = %f s\n", window_length);
-  float window[samp_window_length];
-
+  int number_windows_in_signal;
   char format_as_lvm [field * 5 + 3];
   format_string_field_selection_as_lvm (format_as_lvm, field);
 
+  frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
+
+  printf("Starting spectral analyzing of recorded signal...\n\n");
+  printf("Preliminary hypothesis: \n");
+  printf("Fs (sampling frequency) = %f Hz\n", samp_freq);
+  printf("T (window length) = %f s\n", window_length);
+
   n_samples = number_of_samples_of_file (argv[1]);
+  number_windows_in_signal = (int) (n_samples / (samp_freq * window_length));
 
   printf("\rN (number of samples) = %d unit\n", n_samples);
   printf("Dt (signal length) = %f s = %f min\n\n", n_samples / samp_freq, (n_samples / samp_freq) / 60);
 
-  printf("Fourier transform computings on :\n");
-  printf("Window function = %s\n", window_name_of_window_id (window_function_id)); //a moduler
+  printf("Fourier transform computings will perform on:\n");
+  printf("Window function = %s\n", window_name_of_window_id (window_function_id));
   printf("Samples for one window = %f\n", (samp_freq * window_length));
   printf("Number of windows to be computed on recorded signal (bits) = %f\n", (n_samples / (samp_freq * window_length)));
-
-  int number_windows_in_signal = (int) (n_samples / (samp_freq * window_length));
-  
   printf("Searching frequency components = ");
-  print_float_array (number_frequency_components, frequency_components);
-  printf("\n\n");
-  printf("n_samples: %d\n",n_samples);
-  float *signal;
-  signal = malloc(sizeof(float)*n_samples);
-  printf("testest\n");
-  init_array_signal (signal, n_samples, format_as_lvm, argv[1]);
-  printf("glop2\n");
-  return 0;
+  print_float_array (number_frequency_components, frequency_components); printf("\n\n");
 
-  printf("Computing... \n");
-
-  int j; // iterator
-  char buffer[MAX_FILE_LINE_LENGTH];
-  float temp [1];
+  printf ("Initializing data into memory...\n");
   
-  // file processing
-  FILE *input_file = fopen(argv[1], "r");
-  FILE *output_file = fopen(argv[2], "w");
-  int i = 0;
-  int k = 0;
+  float *signal = malloc (sizeof(float) * n_samples);
+  init_array_signal (signal, n_samples, format_as_lvm, argv[1]);
 
+  float *window;
+  window = malloc (sizeof (float) * samp_window_length);
+
+  printf("\rComputing... \n");
+  
+  int i; // iterator on each windows of the signal <-> iteration on time with a step of T
+  int j; // iterator on each frequency component in search
+  
   float time;
   float frequency;
   float amplitude;
 
-  fprintf (output_file, "Frequency,Time,Amplitude\n");
+  // file processing
+  FILE *output_file = fopen(argv[2], "w");
+  fprintf (output_file, "Frequency,Time,Amplitude\n"); // initialize CSV output file header
 
-  while (!feof (input_file)){
-    fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
-    if (is_number (buffer[0])){
-      sscanf  (buffer, format_as_lvm, temp);
-      // printf("counted value : %f\n", temp[0]); // uncomment for bug solving
+  // iterating on windows
+  for (i = 0 ; i < number_windows_in_signal ; i++){
+    // initialize window function
+    init_array_window (window, signal, samp_window_length, i);
+
+    //apply a window function
+    apply_window_function (window, samp_window_length, window_function_id);
+    
+    // iterating on each frequency component in search -> processing Fourier transform 
+    for (j = 0 ; j < number_frequency_components ; j++){
+      time = i * window_length;
+      frequency = frequency_components[j];
+      amplitude = 
+	sqrt(
+	     pow ((somme_fourier_1 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
+	     + pow ((somme_fourier_2 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
+	     );
       
-      if (i == (samp_window_length - 1)){
-	i = 0; // put index to 0 to get a new computation window afterwards
-	
-	//apply a window function
-	apply_window_function (window, samp_window_length, window_function_id);
-
-	//processing Fourier transform
-	for (j = 0 ; j < number_frequency_components ; j++){
-	  time = k * window_length;
-	  frequency = frequency_components[j];
-	  amplitude = sqrt(
-		     pow ((somme_fourier_1 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
-		     + pow ((somme_fourier_2 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
-		     );
-	  //	  printf ("%f,%f,%f\n", frequency, time, amplitude);
-	  fprintf (output_file, "%f,%f,%f\n", frequency, time, amplitude);
-	}
-	k++;
-	printf ("\r[%d] Calculating at %dth window...\t", ((int) (((k * 100) / number_windows_in_signal))), k); // comment for better performance
-      }
-      else{
-	// fill the computation window until window gets full for FT computation
-	window[i] = temp[0];
-	i++;
-      }
+      fprintf (output_file, "%f,%f,%f\n", frequency, time, amplitude); // writing on output channel
+      printf ("\r%f,%f,%f\n", frequency, time, amplitude); // uncomment for bug solving
     }
+
+    printf ("\r[%d] Calculating at %dth window...\t", ((int) (((i * 100) / number_windows_in_signal))), i); // comment for better performance
   }
 
   // ending process
   printf("\nSpectrum analysis has ended.\n");
-  fclose(input_file);
   fclose(output_file);
 
   return EXIT_SUCCESS;

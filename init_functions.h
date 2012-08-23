@@ -17,6 +17,8 @@
 #define MAX_FILE_LINE_LENGTH 500
 #define PI 3.14159265359
 
+void init_array_window (float window[], float signal[], int samp_window_length, int index);
+
 void init_array_signal (float signal[], int signal_size, char format_string[], char file_name[]);
 
 // need to be checked!

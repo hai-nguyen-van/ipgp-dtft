@@ -14,25 +14,29 @@
 
 #include "init_functions.h"
 
+// initializes a window array with a signal
+void init_array_window (float window[], float signal[], int samp_window_length, int index){
+  int n;
+  for (n = 0 ; n < samp_window_length ; n++)
+    window [n] = signal [index * samp_window_length + n];
+  return;
+}
+
+// initilizes a signal array with a file name
 void init_array_signal (float signal[], int signal_size, char format_string[], char file_name[]){
   FILE *input_file = fopen(file_name, "r");
-  int i=0;
-  printf("etape %d\n",i++);
+  int i = 0;
   char buffer[MAX_FILE_LINE_LENGTH];
-  printf("etape %d\n",i++);
   int n = 0;
-  printf("etape %d\n",i++);
   float temp[1];
-  printf("etape %d\n",i++);
-  printf("debut appel\n");
   while (!feof (input_file)){
     fscanf (input_file, "%[^\n]\n", buffer); // focus on a specific line
     if (is_number (buffer[0])){
       sscanf (buffer, format_string, temp);
-      //if (n%(signal_size/1000) == 0)
-	printf ("\r [%d] counted value : %f", n,  temp[0]); // uncomment for bug solving
       signal [n] = temp[0];
-      // printf("\r%d", n); // comment for better performance
+      //if (n%(signal_size/1000) == 0)
+      //printf ("\r [%d] counted value : %f", n,  temp[0]); // uncomment for bug solving
+      printf ("\r%d%%", (int) ((n * 100) / signal_size)); // percentage display, comment for better perf
       n++;
     }
   }
