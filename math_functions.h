@@ -11,8 +11,8 @@
 #include <string.h>
 #include <math.h>
 */
-#ifndef _FUNCTION_H_
-#define _FUNCTION_H_
+#ifndef _MATH_FUNCTIONS_H_
+#define _MATH_FUNCTIONS_H_
 
 #define MAX_FILE_LINE_LENGTH 500
 #define PI 3.14159265359
@@ -29,10 +29,10 @@ void apply_window_function (float window[], int samp_window_length, int window_t
 
 // in discrete Fourier transform, returns the first sum
 // recursive function needs a number of access to stack equals to number of samples to sum
-float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp, float samp_freq);
+float somme_fourier_1 (float samples[], int samp_number, float freq_comp, float samp_freq);
 
 // in discrete Fourier transform, returns the second sum
-float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp, float samp_freq);
+float somme_fourier_2 (float samples[], int samp_number, float freq_comp, float samp_freq);
 
 char *window_name_of_window_id (int window_id);
 #endif

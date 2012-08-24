@@ -118,23 +118,21 @@ void apply_window_function (float window[], int samp_window_length, int window_t
 
 // in discrete Fourier transform, returns the first sum
 // recursive function needs a number of access to stack equals to number of samples to sum
-float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
-  if (n == (samp_number - 1)){
-    return (samples[samp_number - 1] * cos ((2 * freq_comp * PI * n) / samp_freq));
-  }
-  else{
-    return (samples[n] * cos ((2 * freq_comp * PI * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
-  }
+float somme_fourier_1 (float samples[], int samp_number, float freq_comp, float samp_freq){
+  int n; // iterator
+  float result = 0;
+  for (n = 0 ; n < samp_number ; n++)
+    result = result + (samples[n] * cos ((2 * freq_comp * PI * n) / samp_freq));
+  return result;
 }
 
 // in discrete Fourier transform, returns the second sum
-float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp, float samp_freq){
-  if (n == (samp_number - 1)){
-    return samples[samp_number - 1] * cos ((2 * freq_comp * PI * n) / samp_freq);
-  }
-  else{
-    return (samples[n] * sin ((2 * freq_comp * PI * n) / samp_freq)) + somme_fourier_1 ((n + 1), samples, samp_number, freq_comp, samp_freq);
-  }
+float somme_fourier_2 (float samples[], int samp_number, float freq_comp, float samp_freq){
+  int n; // iterator
+  float result = 0;
+  for (n = 0 ; n < samp_number ; n++)
+    result = result + (samples[n] * sin ((2 * freq_comp * PI * n) / samp_freq));
+  return result;
 }
 
 char *window_name_of_window_id (int window_id){

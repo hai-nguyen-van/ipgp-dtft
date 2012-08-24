@@ -25,7 +25,6 @@ void init_array_window (float window[], float signal[], int samp_window_length, 
 // initilizes a signal array with a file name
 void init_array_signal (float signal[], int signal_size, char format_string[], char file_name[]){
   FILE *input_file = fopen(file_name, "r");
-  int i = 0;
   char buffer[MAX_FILE_LINE_LENGTH];
   int n = 0;
   float temp[1];
@@ -34,7 +33,7 @@ void init_array_signal (float signal[], int signal_size, char format_string[], c
     if (is_number (buffer[0])){
       sscanf (buffer, format_string, temp);
       signal [n] = temp[0];
-      //if (n%(signal_size/1000) == 0)
+      //if (n % (signal_size / 1000) == 0)
       //printf ("\r [%d] counted value : %f", n,  temp[0]); // uncomment for bug solving
       printf ("\r%d%%", (int) ((n * 100) / signal_size)); // percentage display, comment for better perf
       n++;

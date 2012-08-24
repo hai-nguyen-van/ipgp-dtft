@@ -11,8 +11,8 @@
 #include <string.h>
 #include <math.h>
 */
-#ifndef _FUNCTION_H_
-#define _FUNCTION_H_
+#ifndef _INIT_FUNCTIONS_H_
+#define _INIT_FUNCTIONS_H_
 
 #define MAX_FILE_LINE_LENGTH 500
 #define PI 3.14159265359
@@ -45,5 +45,4 @@ char* replace(char *st, char *orig, char *repl);
 // modify input, replace , with .
 char* string2float(char* buf);
 
-char *window_name_of_window_id (int window_id);
 #endif
