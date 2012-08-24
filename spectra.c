@@ -18,10 +18,10 @@
 // main function 
 int main (int argc, char **argv){
 
-  // BEGIN physics -------------------------------------------------------------------------------
+  // BEGIN physics ----------------------------------------------------------------------
   unsigned int n_samples;           // DO NOT FILL HERE!       // (unit)
-  const float samp_freq = 10000;                               // (Hz)
-  const int bit_rate = 1;                                      // (Hz = bps)
+  const float samp_freq = 11025;                               // (Hz)
+  const int bit_rate = 1200;        // DPDS ON NO OF WINDOWS   // (Hz = bps)
   const float window_length = 1.0 / bit_rate;                  // (s)
   const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
@@ -32,15 +32,15 @@ int main (int argc, char **argv){
   */
 
   // pseudo continuous FT calc
-  const float central_frequency = 100000;                                // (Hz)
-  const float span = 200000;                                             // (Hz)
-  const float bandwidth_res = 100;                                       // (Hz)
+  const float central_frequency = 1200;                                  // (Hz)
+  const float span = 2000;                                               // (Hz)
+  const float bandwidth_res = 1;                                         // (Hz)
   const int number_frequency_components = (int) (span / bandwidth_res);  // (unit)
   float frequency_components[number_frequency_components];               // (set of Hz)
-  const int window_function_id = 0;                                      // see upon for associated id window function
 
+  const int window_function_id = 0;                                      // see upon for associated id window function
   int field = 0;                                                         // select field in file seperated by delimiter
-  // END physics --------------------------------------------------------------------------------
+  // END physics ------------------------------------------------------------------------
 
   int number_windows_in_signal;
   char format_as_lvm [field * 5 + 3];
@@ -104,16 +104,18 @@ int main (int argc, char **argv){
 	     pow ((somme_fourier_1 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
 	     + pow ((somme_fourier_2 (0, window, samp_window_length, frequency_components[j], samp_freq)), 2)
 	     );
-      
       fprintf (output_file, "%f,%f,%f\n", frequency, time, amplitude); // writing on output channel
-      printf ("\r%f,%f,%f\n", frequency, time, amplitude); // uncomment for bug solving
+      // printf ("\r%f,%f,%f\n", frequency, time, amplitude); // uncomment for bug solving
     }
 
     printf ("\r[%d] Calculating at %dth window...\t", ((int) (((i * 100) / number_windows_in_signal))), i); // comment for better performance
   }
 
   // ending process
-  printf("\nSpectrum analysis has ended.\n");
+  printf ("Deallocating space in memory...\n");
+  free (signal);
+  free (window);
+  printf ("\nSpectrum analysis has ended.\n");
   fclose(output_file);
 
   return EXIT_SUCCESS;
