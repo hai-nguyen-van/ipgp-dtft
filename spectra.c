@@ -21,7 +21,7 @@ int main (int argc, char **argv){
   // BEGIN physics ----------------------------------------------------------------------
   unsigned int n_samples;           // DO NOT FILL HERE!       // (unit)
   const float samp_freq = 200000;                              // (Hz)
-  const int bit_rate = 1;           // DPDS ON NO OF WINDOWS   // (Hz = bps)
+  const float bit_rate = 0.77;           // DPDS ON NO OF WINDOWS   // (Hz = bps)
   const float window_length = 1.0 / bit_rate;                  // (s)
   const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
@@ -33,13 +33,13 @@ int main (int argc, char **argv){
 
   // pseudo continuous FT calc
   const float central_frequency = 100000;                                // (Hz)
-  const float span = 2000;                                               // (Hz)
+  const float span = 500;                                                // (Hz)
   const float bandwidth_res = 1;                                         // (Hz)
   const int number_frequency_components = (int) (span / bandwidth_res);  // (unit)
   float frequency_components[number_frequency_components];               // (set of Hz)
 
-  const int window_function_id = 0;                                      // see upon for associated id window function
-  int field = 0;                                                         // select field in file seperated by delimiter
+  const int window_function_id = int_of_string (argv[3]);                // see upon for associated id window function
+  const int field = 0;                                                   // select field in file seperated by delimiter
   // END physics ------------------------------------------------------------------------
 
   int number_windows_in_signal;
@@ -79,9 +79,9 @@ int main (int argc, char **argv){
   int i; // iterator on each windows of the signal <-> iteration on time with a step of T
   int j; // iterator on each frequency component in search
   
-  float time;
-  float frequency;
-  float amplitude;
+  float time;      // (s)
+  float frequency; // (Hz)
+  float amplitude; // (V^2/Hz)
 
   // file processing
   FILE *output_file = fopen(argv[2], "w");
