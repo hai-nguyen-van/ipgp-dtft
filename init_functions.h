@@ -33,16 +33,6 @@ int number_of_samples_of_file (char *file_name);
 // makes a format string that matches number values in a LabVIEW Measurement file
 void format_string_field_selection_as_lvm (char *s, int n);
 
-// factorial function
-// be careful of recursive calls !
-int factorial (int n);
-
-// calculates the Modified Bessel function at nth order of the 1st kind
-float modified_bessel_0 (float x);
-
-// calculates and affects window function on a restricted part of the signal
-void apply_window_function (float window[], int samp_window_length, int window_type);
-
 // prints on stdout an array t as a set of float
 void print_float_array (int length, float t[]);
 
@@ -54,13 +44,6 @@ char* replace(char *st, char *orig, char *repl);
 
 // modify input, replace , with .
 char* string2float(char* buf);
-
-// in discrete Fourier transform, returns the first sum
-// recursive function needs a number of access to stack equals to number of samples to sum
-float somme_fourier_1 (int n, float samples[], int samp_number, float freq_comp, float samp_freq);
-
-// in discrete Fourier transform, returns the second sum
-float somme_fourier_2 (int n, float samples[], int samp_number, float freq_comp, float samp_freq);
 
 char *window_name_of_window_id (int window_id);
 #endif

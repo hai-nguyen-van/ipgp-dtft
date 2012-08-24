@@ -15,6 +15,7 @@ clean:
 	rm -f *~
 	rm -f *.Rout
 	rm -f *.o
+	rm -f spectra
 
 clean_output:
 	rm -f *.pdf
