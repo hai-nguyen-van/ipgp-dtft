@@ -33,9 +33,10 @@ void init_array_signal (float signal[], int signal_size, char format_string[], c
     if (is_number (buffer[0])){
       sscanf (buffer, format_string, temp);
       signal [n] = temp[0];
-      //if (n % (signal_size / 1000) == 0)
-      //printf ("\r [%d] counted value : %f", n,  temp[0]); // uncomment for bug solving
-      printf ("\r%d%%", (int) ((n * 100) / signal_size)); // percentage display, comment for better perf
+      if (n * 100 % signal_size == 0){
+        printf ("\r%d%%", (int) ((n * 100) / signal_size));
+        fflush(stdout);
+      }
       n++;
     }
   }
