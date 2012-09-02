@@ -1,4 +1,4 @@
-/*
+/**
  * SPECTRA - a window-optimized spectrum analyzer with Fourier transform
  * Hai Nguyen Van <nguyenva@informatique.univ-paris-diderot.fr>
  * Institut de Physique du Globe de Paris, Université Paris Diderot
@@ -35,4 +35,6 @@ float somme_fourier_1 (float samples[], int samp_number, float freq_comp, float 
 float somme_fourier_2 (float samples[], int samp_number, float freq_comp, float samp_freq);
 
 char *window_name_of_window_id (int window_id);
+
+float modulus_of_fourier_transform_of_signal_window (float window[], int samp_window_length, float frequency_component, float samp_freq);
 #endif

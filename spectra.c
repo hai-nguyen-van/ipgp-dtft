@@ -19,9 +19,9 @@
 int main (int argc, char **argv){
 
   // BEGIN physics ----------------------------------------------------------------------
-  unsigned int n_samples;           // DO NOT FILL HERE!       // (unit)
+  unsigned int n_samples;             // DO NOT FILL HERE!     // (unit)
   const float samp_freq = 200000;                              // (Hz)
-  const float bit_rate = 0.77;           // DPDS ON NO OF WINDOWS   // (Hz = bps)
+  const float bit_rate = 1;           // DPDS ON NO OF WINDOWS // (Hz = bps)
   const float window_length = 1.0 / bit_rate;                  // (s)
   const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
   
@@ -99,11 +99,9 @@ int main (int argc, char **argv){
     for (j = 0 ; j < number_frequency_components ; j++){
       time = i * window_length;
       frequency = frequency_components[j];
-      amplitude = 
-	sqrt(
-	     pow ((somme_fourier_1 (window, samp_window_length, frequency_components[j], samp_freq)), 2)
-	     + pow ((somme_fourier_2 (window, samp_window_length, frequency_components[j], samp_freq)), 2)
-	     );
+      amplitude = modulus_of_fourier_transform_of_signal_window (window, samp_window_length, frequency_components[j], samp_freq);
+      
+      // amplitude = window [j];
       fprintf (output_file, "%f,%f,%f\n", frequency, time, amplitude); // writing on output channel
       printf ("\r%d%%", (int) ((i * j * 100) / ((number_windows_in_signal - 1) * (number_frequency_components - 1)))); // comment for better performance
       // printf ("\r%f,%f,%f\n", frequency, time, amplitude); // uncomment for bug solving

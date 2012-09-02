@@ -151,3 +151,12 @@ char *window_name_of_window_id (int window_id){
   }
 }
 
+float modulus_of_fourier_transform_of_signal_window (float window[], int samp_window_length, float frequency_component, float samp_freq){
+  return sqrt(
+	      pow ((somme_fourier_1 (window, samp_window_length, frequency_component, samp_freq)), 2)   // real part
+	      + pow ((somme_fourier_2 (window, samp_window_length, frequency_component, samp_freq)), 2) // imaginary part
+	      );
+  
+}
+
+
