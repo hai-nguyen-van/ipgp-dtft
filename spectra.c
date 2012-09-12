@@ -43,8 +43,17 @@ int main (int argc, char **argv){
   // END physics ------------------------------------------------------------------------
 
   int number_windows_in_signal;
+
+  // initialize format reference string for LabVIEW lvm file format
   char format_as_lvm [field * 5 + 3];
   format_string_field_selection_as_lvm (format_as_lvm, field);
+
+  //TODO
+  // initialize format reference string for LabVIEW lvm file format
+  // char format_as_raw_pratham [];
+  // format_string_field_selection_as_raw_pratham (format_as_raw_pratham, field);
+
+  char *format_ref_string = format_as_lvm;
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
 
@@ -69,7 +78,7 @@ int main (int argc, char **argv){
   printf ("Initializing data into memory...\n");
   
   float *signal = malloc (sizeof(float) * n_samples);
-  init_array_signal (signal, n_samples, format_as_lvm, argv[1]);
+  init_array_signal (signal, n_samples, format_ref_string, argv[1]);
 
   float *window;
   window = malloc (sizeof (float) * samp_window_length);
