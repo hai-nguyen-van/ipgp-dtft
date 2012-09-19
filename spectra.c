@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #include "init_functions.h"
 #include "math_functions.h"
@@ -57,7 +58,11 @@ int main (int argc, char **argv){
 
   frequency_components_array_init (central_frequency, span, bandwidth_res, frequency_components); // comment if manual choice for FT computings parameters
 
-  printf("Starting spectral analyzing of recorded signal...\n\n");
+  // start time
+  time_t t = time(NULL);
+  struct tm tm = *localtime(&t);
+
+  printf("Starting spectral analyzing of recorded signal on %s at %d-%d-%d %d:%d\n\n", argv[1], 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min);
   printf("Preliminary hypothesis: \n");
   printf("Fs (sampling frequency) = %f Hz\n", samp_freq);
   printf("T (window length) = %f s\n", window_length);
