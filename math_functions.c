@@ -1,5 +1,5 @@
 /**
- * SPECTRA - a window-optimized spectrum analyzer with Fourier transform
+ * IPGP-FFT - a window-optimized spectrum analyzer with Fourier transform
  * Hai Nguyen Van <nguyenva@informatique.univ-paris-diderot.fr>
  * Institut de Physique du Globe de Paris, Université Paris Diderot
  * The copyright to this code is held by Institut de Physique du Globe de Paris. All rights reserved. This file is distributed under the license CeCILL Free Software License Agreement.
@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <complex.h>
 
 #include "math_functions.h"
 
@@ -152,11 +153,12 @@ char *window_name_of_window_id (int window_id){
 }
 
 float modulus_of_fourier_transform_of_signal_window (float window[], int samp_window_length, float frequency_component, float samp_freq){
-  return sqrt(
-	      pow ((somme_fourier_1 (window, samp_window_length, frequency_component, samp_freq)), 2)   // real part
-	      + pow ((somme_fourier_2 (window, samp_window_length, frequency_component, samp_freq)), 2) // imaginary part
-	      );
-  
+  float s1 = somme_fourier_1 (window, samp_window_length, frequency_component, samp_freq); // Re
+  float s2 = somme_fourier_2 (window, samp_window_length, frequency_component, samp_freq); // Im
+  return sqrt(pow (s1, 2) + pow (s2, 2));
 }
 
-
+float modulus_of_fast_fourier_transform_of_signal_window (float window[], int samp_window_length, float frequency_component, float samp_freq){
+  exit (EXIT_FAILURE);
+  return 0;
+}

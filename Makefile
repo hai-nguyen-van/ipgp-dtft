@@ -1,5 +1,5 @@
-all: spectra.c init_functions.o math_functions.o
-	gcc -Wall math_functions.o init_functions.o spectra.c -o spectra -lm
+all: ipgp-fft.c init_functions.o math_functions.o
+	gcc -Wall math_functions.o init_functions.o ipgp-fft.c -o ipgp-fft -lm
 
 init_functions.o: init_functions.c
 	gcc -Wall -c init_functions.c -o init_functions.o 
@@ -15,7 +15,7 @@ clean:
 	rm -f *~
 	rm -f *.Rout
 	rm -f *.o
-	rm -f spectra
+	rm -f ipgp-fft
 
 clean_output:
 	rm -f *.pdf
