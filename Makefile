@@ -1,5 +1,5 @@
-all: ipgp-fft.c init_functions.o math_functions.o
-	gcc -Wall math_functions.o init_functions.o ipgp-fft.c -o ipgp-fft -lm
+all: ipgp_fft.c init_functions.o math_functions.o
+	gcc -Wall math_functions.o init_functions.o ipgp_fft.c -o ipgp_fft -lm
 
 init_functions.o: init_functions.c
 	gcc -Wall -c init_functions.c -o init_functions.o 
