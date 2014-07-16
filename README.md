@@ -21,10 +21,13 @@ You can now execute the program with the following arguments:
 
 	./ipgp_fft [INPUT FILE] [OUTPUT FILE]
 
+![Alt text](https://raw.githubusercontent.com/EmptyStackExn/ipgp-fft/master/pictures/main_example.png "Main command-line interface")
+
 You can also produce a 3D plot in the current directory with [R](http://www.r-project.org/) with:
 
 	make graph SPECTRUM=[SPRECTRUM FILE PREVIOUSLY PRODUCED]
 
+![Alt text](https://raw.githubusercontent.com/EmptyStackExn/ipgp-fft/master/pictures/generated_fft_data_example.png "Example of generated Fourier transform on real signal")
 
 Usage
 =============
