@@ -14,6 +14,7 @@ plot:
 	R CMD BATCH --no-save --no-restore '--args input="${SPECTRUM}" output="${SPECTRUM}.png"' src/draw_3d_plot.R 
 
 heatmap_plot:
+	chmod +x src/draw_heatmap_plot.sh
 	src/draw_heatmap_plot.sh ${SPECTRUM}
 
 clean: 

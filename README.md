@@ -72,6 +72,7 @@ Minimum system requirements
 
 - [gcc](http://cran.r-project.org/web/packages/scatterplot3d/index.html)
 - [R](http://www.r-project.org/) with [scatterplot3d library](http://cran.r-project.org/web/packages/scatterplot3d/index.html) (for graphics)
+- [Gnuplot](http://www.gnuplot.info/) (for heatmap graphics)
 
 LICENSE
 =======
