@@ -21,7 +21,7 @@ int main (int argc, char **argv){
 
   // BEGIN physics ----------------------------------------------------------------------
   unsigned int n_samples;             // DO NOT FILL HERE!     // (unit)
-  const float samp_freq = 200000;                              // (Hz)
+  const float samp_freq = 10000;                              // (Hz)
   const float bit_rate = 1;           // DPDS ON NO OF WINDOWS // (Hz = bps)
   const float window_length = 1.0 / bit_rate;                  // (s)
   const int samp_window_length = (int) (samp_freq / bit_rate); // (unit) //attention inexact
@@ -33,8 +33,8 @@ int main (int argc, char **argv){
   */
 
   // pseudo continuous FT calc
-  const float central_frequency = 100000;                                // (Hz)
-  const float span = 500;                                                // (Hz)
+  const float central_frequency = 1000;                                // (Hz)
+  const float span = 2000;                                                // (Hz)
   const float bandwidth_res = 1;                                         // (Hz)
   const int number_frequency_components = (int) (span / bandwidth_res);  // (unit)
   float frequency_components[number_frequency_components];               // (set of Hz)

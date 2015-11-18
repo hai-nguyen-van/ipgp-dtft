@@ -4,8 +4,10 @@
 is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1])
 
 # if package is not installed yet, fetches package files and install them
-if (! (is.installed ("scatterplot3d")))
+if (! (is.installed ("scatterplot3d"))){
+   print ("WARNING: scatterplot3d is not installed")
    install.packages ("scatterplot3d")
+}
 
 # Arguments specified in commandArgs()
 args <- (commandArgs(TRUE))
