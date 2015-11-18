@@ -11,8 +11,10 @@ math_functions.o: src/math_functions.c
 	$(CC) $(CFLAGS) -c src/math_functions.c -o math_functions.o 
 
 plot:
-	R CMD BATCH --no-save --no-restore '--args input="${SPECTRUM}" output="${SPECTRUM}.png"' draw_3d_plot.R 
-#	evince ${SPECTRUM}.pdf &
+	R CMD BATCH --no-save --no-restore '--args input="${SPECTRUM}" output="${SPECTRUM}.png"' src/draw_3d_plot.R 
+
+heatmap_plot:
+	src/draw_heatmap_plot.sh ${SPECTRUM}
 
 clean: 
 	rm -f *~
