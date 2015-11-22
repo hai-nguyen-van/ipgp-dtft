@@ -1,7 +1,7 @@
-IPGP-FFT - Spectral analysis with window optimization
+IPGP-DTFT - Spectral analysis with window optimization
 ==============
 
-ipgp_fft is yet another spectrum analyzer (based on the discrete Fourier transform), providing a sprectrum with several window functions for signal optimization.
+ipgp_dtft is yet another spectrum analyzer (based on the discrete Fourier transform), providing a sprectrum with several window functions for signal optimization.
 
 For more information on strategies for choosing windows, you may refer to [The Fundamentals of FFT-Based Signal Analysis and Measurement, Cerna-Harvey (National Instruments, Application Note 041)](http://www.lumerink.com/courses/ece697/docs/Papers/The%20Fundamentals%20of%20FFT-Based%20Signal%20Analysis%20and%20Measurements.pdf).
 
@@ -10,16 +10,16 @@ Downloading and building
 
 To download you can click upon or type the following in the Terminal:
 
-	git clone git://github.com/EmptyStackExn/ipgp-fft.git
+	git clone git://github.com/EmptyStackExn/ipgp-dtft.git
 
-The directory `./ipgp-fft/` is created. You need to compile:
+The directory `./ipgp-dtft/` is created. You need to compile:
 
-	cd ipgp-fft
+	cd ipgp-dtft
 	make
 
 You can now execute the program with the following arguments:
 
-	./ipgp_fft [INPUT FILE] [OUTPUT FILE] [WINDOW FUNCTION ID]
+	./ipgp_dtft [INPUT FILE] [OUTPUT FILE] [WINDOW FUNCTION ID]
 
 ![Alt text](pictures/main_example.gif "Main command-line interface")
 
@@ -38,7 +38,7 @@ Or, as well a heatmap plot with [Gnuplot](http://www.gnuplot.info/):
 Usage
 =============
 
-This unstable version not (yet) user-friendly. Parameters for FT computings need to be changed in `ipgp_fft.c` file at the following lines:
+This unstable version not (yet) user-friendly. Parameters for FT computings need to be changed in `ipgp_dtft.c` file at the following lines:
 
         // BEGIN physics -------------------------------------------------------------------------------
         unsigned int n_samples = 0;    // DO NOT FILL HERE!                                    // (unit)

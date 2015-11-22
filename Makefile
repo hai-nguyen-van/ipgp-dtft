@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall
 
-all: src/ipgp_fft.c init_functions.o math_functions.o
-	$(CC) $(CFLAGS) math_functions.o init_functions.o src/ipgp_fft.c -o ipgp_fft -lm
+all: src/ipgp_dtft.c init_functions.o math_functions.o
+	$(CC) $(CFLAGS) math_functions.o init_functions.o src/ipgp_dtft.c -o ipgp_dtft -lm
 
 init_functions.o: src/init_functions.c
 	$(CC) $(CFLAGS) -c src/init_functions.c -o init_functions.o 
@@ -21,7 +21,7 @@ clean:
 	rm -f *~
 	rm -f *.Rout
 	rm -f *.o
-	rm -f ipgp-fft
+	rm -f ipgp-dtft
 
 clean_output:
 	rm -f *.pdf

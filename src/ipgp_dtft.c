@@ -35,7 +35,7 @@ int main (int argc, char **argv){
   // pseudo continuous FT calc
   const float central_frequency = 1000;                                // (Hz)
   const float span = 2000;                                                // (Hz)
-  const float bandwidth_res = 1;                                         // (Hz)
+  const float bandwidth_res = 10;                                         // (Hz)
   const int number_frequency_components = (int) (span / bandwidth_res);  // (unit)
   float frequency_components[number_frequency_components];               // (set of Hz)
 
